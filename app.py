@@ -589,8 +589,7 @@ def render_color_palette_ui(palette_name: str = "Sunset Ocean Orchid"):
         html_parts.append(f"""
         <div style="display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 5px;">
             <div style="width: 30px; height: 30px; background-color: {color}; border: 1px solid #ccc; border-radius: 3px;"></div>
-            <span style="font-family: monospace; font-size: 12px;">{color}</span>
-            <button id="{button_id}" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;">Copy</button>
+            <button id="{button_id}" style="background: white; color: #333; border: 1px solid #ccc; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;">Copy</button>
         </div>
         """)
         
@@ -604,10 +603,10 @@ def render_color_palette_ui(palette_name: str = "Sunset Ocean Orchid"):
                     e.stopPropagation();
                     navigator.clipboard.writeText('{color}').then(function() {{
                         btn.textContent = 'Copied!';
-                        btn.style.background = '#45a049';
+                        btn.style.background = '#e0e0e0';
                         setTimeout(function() {{
                             btn.textContent = 'Copy';
-                            btn.style.background = '#4CAF50';
+                            btn.style.background = 'white';
                         }}, 1000);
                     }}).catch(function(err) {{
                         console.error('Failed to copy:', err);
