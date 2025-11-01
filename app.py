@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
@@ -571,6 +572,59 @@ def create_chart(
     
     return fig
 
+def render_color_palette_ui(palette_name: str = "Sunset Ocean Orchid"):
+    """Render a color palette UI with copy buttons for each color."""
+    palette = get_palette(palette_name)
+    
+    # Build HTML with all colors and JavaScript in a single component
+    html_parts = ['<div style="display: flex; gap: 10px; align-items: center; padding: 10px 0; flex-wrap: wrap;">']
+    html_parts.append('<span style="font-weight: bold; margin-right: 10px;">Color Palette:</span>')
+    
+    scripts = []
+    
+    for i, color in enumerate(palette):
+        # Generate unique ID for each button
+        button_id = f"copy_btn_{i}_{abs(hash(color))}"
+        
+        html_parts.append(f"""
+        <div style="display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 5px;">
+            <div style="width: 30px; height: 30px; background-color: {color}; border: 1px solid #ccc; border-radius: 3px;"></div>
+            <span style="font-family: monospace; font-size: 12px;">{color}</span>
+            <button id="{button_id}" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;">Copy</button>
+        </div>
+        """)
+        
+        scripts.append(f"""
+        (function() {{
+            var btn = document.getElementById('{button_id}');
+            if (btn && !btn.hasAttribute('data-listener')) {{
+                btn.setAttribute('data-listener', 'true');
+                btn.addEventListener('click', function(e) {{
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigator.clipboard.writeText('{color}').then(function() {{
+                        btn.textContent = 'Copied!';
+                        btn.style.background = '#45a049';
+                        setTimeout(function() {{
+                            btn.textContent = 'Copy';
+                            btn.style.background = '#4CAF50';
+                        }}, 1000);
+                    }}).catch(function(err) {{
+                        console.error('Failed to copy:', err);
+                    }});
+                }});
+            }}
+        }})();
+        """)
+    
+    html_parts.append('</div>')
+    html_parts.append('<script>')
+    html_parts.append(''.join(scripts))
+    html_parts.append('</script>')
+    
+    full_html = ''.join(html_parts)
+    components.html(full_html, height=60)
+
 def main():
     st.title("Force Tester Data Visualization")
     
@@ -579,6 +633,9 @@ def main():
         "Choose an Excel file",
         type=['xlsx', 'xls']
     )
+    
+    # Display color palette UI with copy buttons
+    render_color_palette_ui("Sunset Ocean Orchid")
     
     if uploaded_file is not None:
         try:
@@ -641,7 +698,7 @@ def main():
             
             # Initialize color palette if not exists
             if 'color_palette' not in st.session_state:
-                st.session_state.color_palette = 'Vibrant Color Fiesta'
+                st.session_state.color_palette = 'Sunset Ocean Orchid'
             if 'previous_palette' not in st.session_state:
                 st.session_state.previous_palette = st.session_state.color_palette
             
